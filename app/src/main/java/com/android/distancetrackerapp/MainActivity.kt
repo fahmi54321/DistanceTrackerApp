@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import com.android.distancetrackerapp.Permission.hasLocationPermission
+import com.android.distancetrackerapp.utils.Permission.hasLocationPermission
 
 class MainActivity : AppCompatActivity() {
 

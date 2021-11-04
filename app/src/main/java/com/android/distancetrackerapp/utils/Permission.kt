@@ -1,9 +1,9 @@
-package com.android.distancetrackerapp
+package com.android.distancetrackerapp.utils
 
 import android.Manifest
 import android.content.Context
 import androidx.fragment.app.Fragment
-import com.android.distancetrackerapp.Constants.PERMISSION_LOCATION_REQUEST_CODE
+import com.android.distancetrackerapp.utils.Constants.PERMISSION_LOCATION_REQUEST_CODE
 import com.vmadalin.easypermissions.EasyPermissions
 
 //todo 1 permission fine location

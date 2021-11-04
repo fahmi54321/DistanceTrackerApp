@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import com.android.distancetrackerapp.Permission.hasLocationPermission
-import com.android.distancetrackerapp.Permission.requestLocationPermission
+import com.android.distancetrackerapp.utils.Permission.hasLocationPermission
+import com.android.distancetrackerapp.utils.Permission.requestLocationPermission
 import com.android.distancetrackerapp.databinding.FragmentPermissionBinding
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog

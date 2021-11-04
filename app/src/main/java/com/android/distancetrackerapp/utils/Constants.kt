@@ -1,4 +1,4 @@
-package com.android.distancetrackerapp
+package com.android.distancetrackerapp.utils
 
 object Constants {
 
