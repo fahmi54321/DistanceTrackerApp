@@ -83,7 +83,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     override fun onMyLocationButtonClick(): Boolean {
 
-        //todo 6 enable my location
+        //todo 6 enable my location (finish)
         binding.hintTextview.animate().alpha(0f).duration = 1500
         lifecycleScope.launch {
             delay(2500)
