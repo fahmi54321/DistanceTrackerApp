@@ -1,13 +1,30 @@
 package com.android.distancetrackerapp.service
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_LOW
 import android.content.Intent
+import android.os.Build
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_START
 import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_STOP
+import com.android.distancetrackerapp.utils.Constants.NOTIFICATION_CHANNEL_ID
+import com.android.distancetrackerapp.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 //todo 1 create service (next android manifest)
+//todo 2 create_notification (next NotificationModule)
+@AndroidEntryPoint
 class TrackerService:LifecycleService() {
+
+    //todo 7 create_notification
+    @Inject
+    lateinit var notification:NotificationCompat.Builder
+    @Inject
+    lateinit var notificationManager:NotificationManager
 
     //todo 8 create service
     companion object{
@@ -46,5 +63,17 @@ class TrackerService:LifecycleService() {
         }
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    //todo 8 create_notification (finish)
+    private fun createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    NOTIFICATION_CHANNEL_NAME,
+                    IMPORTANCE_LOW
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 }
