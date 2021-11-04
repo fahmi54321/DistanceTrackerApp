@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--todo 4 permission fine location (next PermissionFragment)
-    alt+enter constratint layout, convert to layout binding-->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -9,12 +7,11 @@
 
     </data>
 
+    <!--todo 4 permission fine location (next PermissionFragment)
+    alt+enter constratint layout, convert to layout binding-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         tools:context=".PermissionFragment">
 
         <ImageView

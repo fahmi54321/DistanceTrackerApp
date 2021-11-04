@@ -25,6 +25,8 @@ import kotlinx.coroutines.launch
 //todo 3 enable my location
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener {
 
+    private var mapFragment: SupportMapFragment?=null
+
     //todo 3 map_fragment_layout
     private var _binding:FragmentMapsBinding?=null
     private val binding get() = _binding!!
@@ -47,13 +49,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         binding.stopButton.setOnClickListener{}
         binding.resetButton.setOnClickListener{}
 
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
+
+        return binding.root
     }
 
     @SuppressLint("MissingPermission")
