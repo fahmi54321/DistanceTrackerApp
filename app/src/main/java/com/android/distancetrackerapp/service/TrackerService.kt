@@ -12,6 +12,7 @@ import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_START
 import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_STOP
 import com.android.distancetrackerapp.utils.Constants.NOTIFICATION_CHANNEL_ID
 import com.android.distancetrackerapp.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import com.android.distancetrackerapp.utils.Constants.NOTIFICATION_ID
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -52,6 +53,9 @@ class TrackerService:LifecycleService() {
                 ACTION_SERVICE_START ->{
                     //todo 10 create service (finish)
                     started.postValue(true)
+
+                    //todo 2 start_foreground_service (finish)
+                    startForegroundService()
                 }
                 ACTION_SERVICE_STOP ->{
                     //todo 10 create service (finish)
@@ -63,6 +67,16 @@ class TrackerService:LifecycleService() {
         }
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+
+    //todo 1 start_foreground_service
+    private fun startForegroundService(){
+        createNotificationChannel()
+        startForeground(
+                NOTIFICATION_ID,
+                notification.build()
+        )
     }
 
     //todo 8 create_notification (finish)

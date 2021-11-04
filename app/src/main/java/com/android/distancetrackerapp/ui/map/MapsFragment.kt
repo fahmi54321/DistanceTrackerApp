@@ -1,4 +1,4 @@
-package com.android.distancetrackerapp
+package com.android.distancetrackerapp.ui.map
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -9,9 +9,9 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.android.distancetrackerapp.R
 import com.android.distancetrackerapp.databinding.FragmentMapsBinding
 import com.android.distancetrackerapp.service.TrackerService
 import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_START
@@ -21,12 +21,9 @@ import com.android.distancetrackerapp.utils.ExtensionFunctions.show
 import com.android.distancetrackerapp.utils.Permission.hasBackgroundLocationPermission
 import com.android.distancetrackerapp.utils.Permission.requestBackgroundLocationPermission
 
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import kotlinx.coroutines.delay
@@ -114,10 +111,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 val currentSecond = millisUntilFinished / 1000
                 if (currentSecond.toString() == "0"){
                     binding.timerTextview.text = "GO"
-                    binding.timerTextview.setTextColor(ContextCompat.getColor(requireContext(),R.color.black))
+                    binding.timerTextview.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
                 }else{
                     binding.timerTextview.text = currentSecond.toString()
-                    binding.timerTextview.setTextColor(ContextCompat.getColor(requireContext(),R.color.red))
+                    binding.timerTextview.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
                 }
             }
 
