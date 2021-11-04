@@ -64,9 +64,10 @@ class PermissionFragment : Fragment(),EasyPermissions.PermissionCallbacks {
         findNavController().navigate(R.id.action_permissionFragment_to_mapsFragment)
     }
 
+
     //todo 7 permission fine location
-    override fun onDestroyOptionsMenu() {
-        super.onDestroyOptionsMenu()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }
