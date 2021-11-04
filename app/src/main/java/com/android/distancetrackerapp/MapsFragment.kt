@@ -4,12 +4,15 @@ import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.android.distancetrackerapp.databinding.FragmentMapsBinding
+import com.android.distancetrackerapp.utils.ExtensionFunctions.disable
 import com.android.distancetrackerapp.utils.ExtensionFunctions.hide
 import com.android.distancetrackerapp.utils.ExtensionFunctions.show
 import com.android.distancetrackerapp.utils.Permission.hasBackgroundLocationPermission
@@ -89,10 +92,37 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     //todo 5 permission background location
     private fun onStartButtonClicked() {
         if (hasBackgroundLocationPermission(requireContext())){
-            Toast.makeText(context, "enabled", Toast.LENGTH_SHORT).show()
+            //todo 1 implement countdown
+            startCountDown()
+            binding.startButton.disable()
+            binding.startButton.hide()
+            binding.stopButton.show()
         }else{
             requestBackgroundLocationPermission(this)
         }
+    }
+
+    //todo 2 implement countdown (finish)
+    private fun startCountDown() {
+        binding.timerTextview.show()
+        binding.stopButton.disable()
+        val timer : CountDownTimer = object : CountDownTimer(4000,1000){
+            override fun onTick(millisUntilFinished: Long) {
+                val currentSecond = millisUntilFinished / 1000
+                if (currentSecond.toString() == "0"){
+                    binding.timerTextview.text = "GO"
+                    binding.timerTextview.setTextColor(ContextCompat.getColor(requireContext(),R.color.black))
+                }else{
+                    binding.timerTextview.text = currentSecond.toString()
+                    binding.timerTextview.setTextColor(ContextCompat.getColor(requireContext(),R.color.red))
+                }
+            }
+
+            override fun onFinish() {
+                binding.timerTextview.hide()
+            }
+        }
+        timer.start()
     }
 
     override fun onMyLocationButtonClick(): Boolean {
