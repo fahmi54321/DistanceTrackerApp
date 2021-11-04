@@ -1,6 +1,7 @@
 package com.android.distancetrackerapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
@@ -12,6 +13,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.android.distancetrackerapp.databinding.FragmentMapsBinding
+import com.android.distancetrackerapp.service.TrackerService
+import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_START
 import com.android.distancetrackerapp.utils.ExtensionFunctions.disable
 import com.android.distancetrackerapp.utils.ExtensionFunctions.hide
 import com.android.distancetrackerapp.utils.ExtensionFunctions.show
@@ -119,10 +122,25 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             }
 
             override fun onFinish() {
+//                todo 5 create service
+                sendActionCommandToService(ACTION_SERVICE_START)
+
+
                 binding.timerTextview.hide()
             }
         }
         timer.start()
+    }
+
+    //todo 6 create service (next TrackerService)
+    private fun sendActionCommandToService(action: String) {
+        Intent(
+                requireContext(),
+                TrackerService::class.java
+        ).apply {
+            this.action = action
+            requireContext().startService(this)
+        }
     }
 
     override fun onMyLocationButtonClick(): Boolean {
