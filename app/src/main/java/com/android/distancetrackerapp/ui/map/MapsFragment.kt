@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 //todo 3 enable my location
 //todo 7 permission background location
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
-        EasyPermissions.PermissionCallbacks {
+        EasyPermissions.PermissionCallbacks, GoogleMap.OnMarkerClickListener {
 
     private var mapFragment: SupportMapFragment? = null
 
@@ -70,6 +70,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     //todo 4 map reset
     private var polylinelist = mutableListOf<Polyline>()
+
+    //todo 1 add marker
+    private var markerList = mutableListOf<Marker>()
 
     //todo 6 map reset
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -121,6 +124,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         map.isMyLocationEnabled = true
         //todo 4 enable my location (next object ExtensionFunctions)
         map.setOnMyLocationButtonClickListener(this)
+
+        //todo 5 add marker
+        map.setOnMarkerClickListener(this)
 
         //todo 2 enable my location
         map.uiSettings.apply {
@@ -300,6 +306,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                         100
                 ), 200, null
         )
+
+        //todo 3 add marker
+        addMarker(locationList.first())
+        addMarker(locationList.last())
+    }
+
+    //todo 2 add marker
+    private fun addMarker(position: LatLng){
+        val marker = map.addMarker(MarkerOptions().position(position))
+        markerList.add(marker)
     }
 
     //todo 3 display result
@@ -340,6 +356,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                     )
             )
             locationList.clear()
+
+            //todo 4 add marker
+            for(marker in markerList){
+                marker.remove()
+            }
+
             binding.resetButton.hide()
             binding.startButton.show()
         }
@@ -385,5 +407,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onMarkerClick(p0: Marker?): Boolean {
+        //todo 6 add marker (finish)
+        return true
     }
 }
