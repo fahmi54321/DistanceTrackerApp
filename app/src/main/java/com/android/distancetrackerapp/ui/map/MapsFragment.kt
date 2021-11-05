@@ -14,9 +14,13 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.android.distancetrackerapp.R
 import com.android.distancetrackerapp.databinding.FragmentMapsBinding
+import com.android.distancetrackerapp.model.Result
 import com.android.distancetrackerapp.service.TrackerService
+import com.android.distancetrackerapp.ui.map.MapUtils.calculateElapsedTime
+import com.android.distancetrackerapp.ui.map.MapUtils.calculateTheDistance
 import com.android.distancetrackerapp.ui.map.MapUtils.setCameraPosition
 import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_START
 import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_STOP
@@ -151,6 +155,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             //todo 1 show bigger picture
             if (stopTime != 0L) {
                 showBiggerPicture()
+
+                //todo 4 display result (next nav_graph untuk ngatur popUpTo dari result ke mapsFragment)
+                displayResults()
             }
         })
     }
@@ -270,6 +277,25 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                         100
                 ), 200, null
         )
+    }
+
+    //todo 3 display result
+    private fun displayResults(){
+        val result = Result(
+                calculateTheDistance(locationList),
+                calculateElapsedTime(startTime,stopTime)
+        )
+        lifecycleScope.launch {
+            delay(2500)
+            val directions = MapsFragmentDirections.actionMapsFragmentToResultFragment(result) // jangan lupa rebuild
+            findNavController().navigate(directions)
+            binding.startButton.apply {
+                hide()
+                enable()
+            }
+            binding.stopButton.hide()
+            binding.resetButton.show()
+        }
     }
 
     override fun onMyLocationButtonClick(): Boolean {

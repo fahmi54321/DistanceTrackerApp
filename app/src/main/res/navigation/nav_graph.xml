@@ -32,8 +32,15 @@
         android:name="com.android.distancetrackerapp.ui.result.ResultFragment"
         android:label="fragment_result"
         tools:layout="@layout/fragment_result" >
+<!--        todo 5 display result (next fragment_result.xml)-->
         <action
             android:id="@+id/action_resultFragment_to_mapsFragment"
-            app:destination="@id/mapsFragment" />
+            app:destination="@id/mapsFragment"
+            app:popUpTo="@id/mapsFragment"
+            app:popUpToInclusive="true" />
+<!--        todo 2 display result (next MapsFragment)-->
+        <argument
+            android:name="result"
+            app:argType="com.android.distancetrackerapp.model.Result" />
     </dialog>
 </navigation>
