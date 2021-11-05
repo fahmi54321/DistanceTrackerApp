@@ -30,6 +30,8 @@ import com.android.distancetrackerapp.utils.ExtensionFunctions.hide
 import com.android.distancetrackerapp.utils.ExtensionFunctions.show
 import com.android.distancetrackerapp.utils.Permission.hasBackgroundLocationPermission
 import com.android.distancetrackerapp.utils.Permission.requestBackgroundLocationPermission
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 
 import com.google.android.gms.maps.GoogleMap
@@ -66,6 +68,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     //todo 5 update and observe location list
     private var locationList = mutableListOf<LatLng>()
 
+    //todo 4 map reset
+    private var polylinelist = mutableListOf<Polyline>()
+
+    //todo 6 map reset
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -90,7 +98,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             //todo 2 stop foreground service
             onStopButtonClicked()
         }
-        binding.resetButton.setOnClickListener {}
+        binding.resetButton.setOnClickListener {
+
+            //todo 1 map reset
+            onResetButtonClicked()
+        }
+
+        //todo 7 map reset
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
@@ -174,6 +189,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                     addAll(locationList)
                 }
         )
+
+        //todo 5 map reset
+        polylinelist.add(polyline)
     }
 
     //todo 3 draw a polyline (next MapUtils)
@@ -208,6 +226,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         stopForegroundService()
         binding.stopButton.hide()
         binding.startButton.show()
+    }
+
+    //todo 2 map reset
+    private fun onResetButtonClicked() {
+        mapReset()
     }
 
     //todo 2 implement countdown (finish)
@@ -295,6 +318,30 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             }
             binding.stopButton.hide()
             binding.resetButton.show()
+        }
+    }
+
+    //todo 3 map reset
+    @SuppressLint("MissingPermission")
+    private fun mapReset() {
+        //todo 8 map reset (finish)
+        fusedLocationProviderClient.lastLocation.addOnCompleteListener {
+            val lastKnownLocation = LatLng(
+                    it.result.latitude,
+                    it.result.longitude
+            )
+            for (polyline in polylinelist){
+                polyline.remove()
+            }
+
+            map.animateCamera(
+                    CameraUpdateFactory.newCameraPosition(
+                            setCameraPosition(lastKnownLocation)
+                    )
+            )
+            locationList.clear()
+            binding.resetButton.hide()
+            binding.startButton.show()
         }
     }
 
