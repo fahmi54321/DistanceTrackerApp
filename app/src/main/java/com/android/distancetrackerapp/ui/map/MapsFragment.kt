@@ -2,6 +2,7 @@ package com.android.distancetrackerapp.ui.map
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
@@ -15,17 +16,22 @@ import androidx.lifecycle.lifecycleScope
 import com.android.distancetrackerapp.R
 import com.android.distancetrackerapp.databinding.FragmentMapsBinding
 import com.android.distancetrackerapp.service.TrackerService
+import com.android.distancetrackerapp.ui.map.MapUtils.setCameraPosition
 import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_START
 import com.android.distancetrackerapp.utils.ExtensionFunctions.disable
 import com.android.distancetrackerapp.utils.ExtensionFunctions.hide
 import com.android.distancetrackerapp.utils.ExtensionFunctions.show
 import com.android.distancetrackerapp.utils.Permission.hasBackgroundLocationPermission
 import com.android.distancetrackerapp.utils.Permission.requestBackgroundLocationPermission
+import com.google.android.gms.maps.CameraUpdateFactory
 
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.ButtCap
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import kotlinx.coroutines.delay
@@ -34,16 +40,17 @@ import kotlinx.coroutines.launch
 //todo 2 map_fragment_layout
 //todo 3 enable my location
 //todo 7 permission background location
-class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,EasyPermissions.PermissionCallbacks {
+class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
+    EasyPermissions.PermissionCallbacks {
 
-    private var mapFragment: SupportMapFragment?=null
+    private var mapFragment: SupportMapFragment? = null
 
     //todo 3 map_fragment_layout
-    private var _binding:FragmentMapsBinding?=null
+    private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
 
     //todo 1 enable my location
-    private lateinit var map:GoogleMap
+    private lateinit var map: GoogleMap
 
     //todo 5 update and observe location list
     private var locationList = mutableListOf<LatLng>()
@@ -55,18 +62,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     ): View? {
 
         //todo 4 map_fragment_layout
-        _binding =  FragmentMapsBinding.inflate(inflater, container, false)
+        _binding = FragmentMapsBinding.inflate(inflater, container, false)
 
 
         //todo 6 map_fragment_layout (finish)
-        binding.startButton.setOnClickListener{
+        binding.startButton.setOnClickListener {
 
             //todo 4 permission background location
             onStartButtonClicked()
 
         }
-        binding.stopButton.setOnClickListener{}
-        binding.resetButton.setOnClickListener{}
+        binding.stopButton.setOnClickListener {}
+        binding.resetButton.setOnClickListener {}
 
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
@@ -98,24 +105,56 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     }
 
     //todo 6 update and observe location list
-    private fun observeTrackerService(){
-        TrackerService.locationList.observe(viewLifecycleOwner,{
-            if (it != null){
+    private fun observeTrackerService() {
+        TrackerService.locationList.observe(viewLifecycleOwner, {
+            if (it != null) {
                 locationList = it
-                Log.d("locationList",locationList.toString())
+
+                //todo 2 draw a polyline
+                drawPolyline()
+
+                //todo 5 draw a polyline (finish)
+                followPolyline()
             }
         })
     }
 
+    //todo 1 draw a polyline
+    private fun drawPolyline() {
+        val polyline = map.addPolyline(
+            PolylineOptions().apply {
+                width(10f)
+                color(Color.BLUE)
+                jointType(JointType.ROUND)
+                startCap(ButtCap())
+                endCap(ButtCap())
+                addAll(locationList)
+            }
+        )
+    }
+
+    //todo 3 draw a polyline (next MapUtils)
+    private fun followPolyline() {
+        if (locationList.isNotEmpty()) {
+            map.animateCamera(
+                (
+                        CameraUpdateFactory.newCameraPosition(
+                            setCameraPosition(locationList.last())
+                        )
+                        ), 1000, null
+            )
+        }
+    }
+
     //todo 5 permission background location
     private fun onStartButtonClicked() {
-        if (hasBackgroundLocationPermission(requireContext())){
+        if (hasBackgroundLocationPermission(requireContext())) {
             //todo 1 implement countdown
             startCountDown()
             binding.startButton.disable()
             binding.startButton.hide()
             binding.stopButton.show()
-        }else{
+        } else {
             requestBackgroundLocationPermission(this)
         }
     }
@@ -124,15 +163,25 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     private fun startCountDown() {
         binding.timerTextview.show()
         binding.stopButton.disable()
-        val timer : CountDownTimer = object : CountDownTimer(4000,1000){
+        val timer: CountDownTimer = object : CountDownTimer(4000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val currentSecond = millisUntilFinished / 1000
-                if (currentSecond.toString() == "0"){
+                if (currentSecond.toString() == "0") {
                     binding.timerTextview.text = "GO"
-                    binding.timerTextview.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                }else{
+                    binding.timerTextview.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.black
+                        )
+                    )
+                } else {
                     binding.timerTextview.text = currentSecond.toString()
-                    binding.timerTextview.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+                    binding.timerTextview.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.red
+                        )
+                    )
                 }
             }
 
@@ -150,8 +199,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     //todo 6 create service (next TrackerService)
     private fun sendActionCommandToService(action: String) {
         Intent(
-                requireContext(),
-                TrackerService::class.java
+            requireContext(),
+            TrackerService::class.java
         ).apply {
             this.action = action
             requireContext().startService(this)
@@ -178,14 +227,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        EasyPermissions.onRequestPermissionsResult(requestCode,permissions,grantResults,this)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
     //todo 8 permission background location (finish)
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(this,perms[0])){
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms[0])) {
             SettingsDialog.Builder(requireActivity()).build().show()
-        }else{
+        } else {
             requestBackgroundLocationPermission(this)
         }
     }
