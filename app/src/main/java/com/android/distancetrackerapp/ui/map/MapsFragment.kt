@@ -54,6 +54,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     //todo 1 enable my location
     private lateinit var map: GoogleMap
 
+    //todo 6 calculate elapsed time
+    private var startTime = 0L
+    private var stopTime = 0L
+
     //todo 5 update and observe location list
     private var locationList = mutableListOf<LatLng>()
 
@@ -126,6 +130,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 //todo 5 draw a polyline (finish)
                 followPolyline()
             }
+        })
+
+        //todo 7 calculate elapsed time (finish)
+        TrackerService.startTime.observe(viewLifecycleOwner,{
+            startTime = it
+        })
+
+        TrackerService.stopTime.observe(viewLifecycleOwner,{
+            stopTime = it
         })
     }
 
