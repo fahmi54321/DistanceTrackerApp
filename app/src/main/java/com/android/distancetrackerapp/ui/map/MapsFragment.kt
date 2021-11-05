@@ -30,10 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.ButtCap
-import com.google.android.gms.maps.model.JointType
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import kotlinx.coroutines.delay
@@ -43,7 +40,7 @@ import kotlinx.coroutines.launch
 //todo 3 enable my location
 //todo 7 permission background location
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
-    EasyPermissions.PermissionCallbacks {
+        EasyPermissions.PermissionCallbacks {
 
     private var mapFragment: SupportMapFragment? = null
 
@@ -62,9 +59,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     private var locationList = mutableListOf<LatLng>()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
 
         //todo 4 map_fragment_layout
@@ -120,7 +117,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 locationList = it
 
                 //todo 1 stop foreground service
-                if (locationList.size>1){
+                if (locationList.size > 1) {
                     binding.stopButton.enable()
                 }
 
@@ -133,26 +130,31 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         })
 
         //todo 7 calculate elapsed time (finish)
-        TrackerService.startTime.observe(viewLifecycleOwner,{
+        TrackerService.startTime.observe(viewLifecycleOwner, {
             startTime = it
         })
 
-        TrackerService.stopTime.observe(viewLifecycleOwner,{
+        TrackerService.stopTime.observe(viewLifecycleOwner, {
             stopTime = it
+
+            //todo 1 show bigger picture
+            if (stopTime != 0L) {
+                showBiggerPicture()
+            }
         })
     }
 
     //todo 1 draw a polyline
     private fun drawPolyline() {
         val polyline = map.addPolyline(
-            PolylineOptions().apply {
-                width(10f)
-                color(Color.BLUE)
-                jointType(JointType.ROUND)
-                startCap(ButtCap())
-                endCap(ButtCap())
-                addAll(locationList)
-            }
+                PolylineOptions().apply {
+                    width(10f)
+                    color(Color.BLUE)
+                    jointType(JointType.ROUND)
+                    startCap(ButtCap())
+                    endCap(ButtCap())
+                    addAll(locationList)
+                }
         )
     }
 
@@ -160,11 +162,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     private fun followPolyline() {
         if (locationList.isNotEmpty()) {
             map.animateCamera(
-                (
-                        CameraUpdateFactory.newCameraPosition(
-                            setCameraPosition(locationList.last())
-                        )
-                        ), 1000, null
+                    (
+                            CameraUpdateFactory.newCameraPosition(
+                                    setCameraPosition(locationList.last())
+                            )
+                            ), 1000, null
             )
         }
     }
@@ -200,18 +202,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
                 if (currentSecond.toString() == "0") {
                     binding.timerTextview.text = "GO"
                     binding.timerTextview.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.black
-                        )
+                            ContextCompat.getColor(
+                                    requireContext(),
+                                    R.color.black
+                            )
                     )
                 } else {
                     binding.timerTextview.text = currentSecond.toString()
                     binding.timerTextview.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.red
-                        )
+                            ContextCompat.getColor(
+                                    requireContext(),
+                                    R.color.red
+                            )
                     )
                 }
             }
@@ -237,12 +239,26 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
     //todo 6 create service (next TrackerService)
     private fun sendActionCommandToService(action: String) {
         Intent(
-            requireContext(),
-            TrackerService::class.java
+                requireContext(),
+                TrackerService::class.java
         ).apply {
             this.action = action
             requireContext().startService(this)
         }
+    }
+
+    //todo 2 show bigger picture (finish)
+    private fun showBiggerPicture() {
+        val bounds = LatLngBounds.Builder()
+        for (location in locationList) {
+            bounds.include(location)
+        }
+        map.animateCamera(
+                CameraUpdateFactory.newLatLngBounds(
+                        bounds.build(),
+                        100
+                ), 200, null
+        )
     }
 
     override fun onMyLocationButtonClick(): Boolean {
@@ -260,9 +276,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     //todo 6 permission background location
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
