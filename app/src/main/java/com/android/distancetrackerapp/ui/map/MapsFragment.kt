@@ -18,7 +18,9 @@ import com.android.distancetrackerapp.databinding.FragmentMapsBinding
 import com.android.distancetrackerapp.service.TrackerService
 import com.android.distancetrackerapp.ui.map.MapUtils.setCameraPosition
 import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_START
+import com.android.distancetrackerapp.utils.Constants.ACTION_SERVICE_STOP
 import com.android.distancetrackerapp.utils.ExtensionFunctions.disable
+import com.android.distancetrackerapp.utils.ExtensionFunctions.enable
 import com.android.distancetrackerapp.utils.ExtensionFunctions.hide
 import com.android.distancetrackerapp.utils.ExtensionFunctions.show
 import com.android.distancetrackerapp.utils.Permission.hasBackgroundLocationPermission
@@ -72,7 +74,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             onStartButtonClicked()
 
         }
-        binding.stopButton.setOnClickListener {}
+        binding.stopButton.setOnClickListener {
+            //todo 2 stop foreground service
+            onStopButtonClicked()
+        }
         binding.resetButton.setOnClickListener {}
 
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
@@ -109,6 +114,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         TrackerService.locationList.observe(viewLifecycleOwner, {
             if (it != null) {
                 locationList = it
+
+                //todo 1 stop foreground service
+                if (locationList.size>1){
+                    binding.stopButton.enable()
+                }
 
                 //todo 2 draw a polyline
                 drawPolyline()
@@ -159,6 +169,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         }
     }
 
+    //todo 3 stop foreground service
+    private fun onStopButtonClicked() {
+        //todo 4 stop foreground service
+        stopForegroundService()
+        binding.stopButton.hide()
+        binding.startButton.show()
+    }
+
     //todo 2 implement countdown (finish)
     private fun startCountDown() {
         binding.timerTextview.show()
@@ -194,6 +212,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             }
         }
         timer.start()
+    }
+
+    //todo 5 stop foreground service
+    private fun stopForegroundService() {
+        //todo 6 stop foreground service (next TrackerService)
+        binding.startButton.disable()
+        sendActionCommandToService(ACTION_SERVICE_STOP)
     }
 
     //todo 6 create service (next TrackerService)

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_LOW
+import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.Build
@@ -107,6 +108,9 @@ class TrackerService : LifecycleService() {
                 ACTION_SERVICE_STOP -> {
                     //todo 10 create service (finish)
                     started.postValue(false)
+
+                    //todo 7 stop foreground service
+                    stopForegroundService()
                 }
                 else -> {
 
@@ -140,6 +144,20 @@ class TrackerService : LifecycleService() {
                 locationCallback,
                 Looper.getMainLooper()
         )
+    }
+
+    //todo 8 stop foreground service
+    private fun stopForegroundService() {
+        //todo 9 stop foreground service
+        removeLocationUpdates()
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(NOTIFICATION_ID)
+        stopForeground(true)
+        stopSelf()
+    }
+
+    private fun removeLocationUpdates() {
+        //todo 10 stop foreground service (finish)
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
     //todo 8 create_notification (finish)
