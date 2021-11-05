@@ -3,8 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+<!--    todo 3 create maps binding adapter class (next MapsFragment)-->
     <data>
-
+        <variable
+            name="tracking"
+            type="com.android.distancetrackerapp.ui.map.MapsFragment" />
     </data>
     <!--todo 1 map_fragment_layout(next MapsFragment)-->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,6 +40,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+<!--        todo 6 create maps binding adapter class-->
         <TextView
             android:id="@+id/hint_textview"
             android:layout_width="wrap_content"
@@ -45,6 +49,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="20sp"
+            observeTracking="@{tracking.started}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -62,6 +67,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <!--        todo 7 create maps binding adapter class (finish)-->
         <Button
             android:id="@+id/stopButton"
             android:layout_width="wrap_content"
@@ -70,6 +76,7 @@
             android:backgroundTint="@color/red"
             android:text="@string/stop"
             android:visibility="invisible"
+            observeTracking="@{tracking.started}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

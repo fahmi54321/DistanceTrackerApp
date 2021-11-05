@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.android.distancetrackerapp.R
 import com.android.distancetrackerapp.databinding.FragmentMapsBinding
@@ -44,6 +45,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     private var mapFragment: SupportMapFragment? = null
 
+    //todo 1 create maps binding adapter class
+    val started = MutableLiveData(false)
+
     //todo 3 map_fragment_layout
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
@@ -67,6 +71,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         //todo 4 map_fragment_layout
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
 
+        //todo 4 create maps binding adapter class (next MapsBindingAdapter)
+        binding.lifecycleOwner = this
+        binding.tracking = this
 
         //todo 6 map_fragment_layout (finish)
         binding.startButton.setOnClickListener {
@@ -129,11 +136,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             }
         })
 
+        //todo 2 create maps binding adapter class (next fragment_maps.xml)
+        TrackerService.started.observe(viewLifecycleOwner,{
+            started.value = it
+        })
+
         //todo 7 calculate elapsed time (finish)
         TrackerService.startTime.observe(viewLifecycleOwner, {
             startTime = it
         })
-
         TrackerService.stopTime.observe(viewLifecycleOwner, {
             stopTime = it
 
