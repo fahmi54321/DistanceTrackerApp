@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ import com.android.distancetrackerapp.utils.Permission.requestBackgroundLocation
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import kotlinx.coroutines.delay
@@ -42,6 +44,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     //todo 1 enable my location
     private lateinit var map:GoogleMap
+
+    //todo 5 update and observe location list
+    private var locationList = mutableListOf<LatLng>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -87,6 +92,19 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             isCompassEnabled = false
             isScrollGesturesEnabled = false
         }
+
+        //todo 7 update and observe location list (finish)
+        observeTrackerService()
+    }
+
+    //todo 6 update and observe location list
+    private fun observeTrackerService(){
+        TrackerService.locationList.observe(viewLifecycleOwner,{
+            if (it != null){
+                locationList = it
+                Log.d("locationList",locationList.toString())
+            }
+        })
     }
 
     //todo 5 permission background location

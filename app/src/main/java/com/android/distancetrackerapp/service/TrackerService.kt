@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_LOW
 import android.content.Intent
+import android.location.Location
 import android.os.Build
 import android.os.Looper
 import android.util.Log
@@ -41,6 +42,17 @@ class TrackerService : LifecycleService() {
     //todo 8 create service
     companion object {
         val started = MutableLiveData<Boolean>()
+
+        //todo 1 update and observe location list
+        val locationList = MutableLiveData<MutableList<LatLng>>()
+    }
+
+    //todo 9 create service
+    private fun setInitialValues() {
+        started.postValue(false)
+
+        //todo 2 update and observe location list
+        locationList.postValue(mutableListOf())
     }
 
     //todo 5 start location update
@@ -50,16 +62,20 @@ class TrackerService : LifecycleService() {
 
             result?.locations?.let { locations ->
                 for (location in locations) {
-                    var newLatLng = LatLng(location.latitude, location.longitude)
-                    Log.d("TrackerService", newLatLng.toString())
+                    //todo 4 update and observe location list (next MapsFragment)
+                    updateLocationList(location)
                 }
             }
         }
     }
 
-    //todo 9 create service
-    private fun setInitialValues() {
-        started.postValue(false)
+    //todo 3 update and observe location list
+    private fun updateLocationList(location:Location){
+        var newLatLng = LatLng(location.latitude, location.longitude)
+        locationList.value?.apply {
+            add(newLatLng)
+            locationList.postValue(this)
+        }
     }
 
     override fun onCreate() {
